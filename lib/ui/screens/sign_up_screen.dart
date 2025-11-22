@@ -183,7 +183,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "password": _passwordTEController.text,
     };
     NetworkResponse response = await NetworkCaller.postRequest(
-      Urls.registrasionUrl,
+      Urls.registrationUrl,
       body: requestBody,
     );
     _signUpInProgress = false;

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/ui/screens/sign_in_screen.dart';
 
+import '../controllers/auth_controlle.dart';
 import '../screens/update_profile_screen.dart';
-class TMAppBar extends StatelessWidget implements PreferredSizeWidget   {
-  const TMAppBar({super.key, this.fromUpdateProfile =false});
+
+class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const TMAppBar({super.key, this.fromUpdateProfile = false});
   final bool fromUpdateProfile;
 
   @override
@@ -11,8 +14,8 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget   {
     return AppBar(
       backgroundColor: Colors.green,
       title: GestureDetector(
-        onTap: (){
-          if(fromUpdateProfile) {
+        onTap: () {
+          if (fromUpdateProfile) {
             return;
           }
           Navigator.pushNamed(context, UpdateProfileScreen.name);
@@ -37,10 +40,22 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget   {
           ],
         ),
       ),
+      actions: [
+        IconButton(
+          onPressed: () async {
+            await AuthController.clearUserData();
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              SignInScreen.name,
+              (predicate) => false,
+            );
+          },
+          icon: Icon(Icons.logout),
+        ),
+      ],
     );
   }
 
   @override
-  // TODO: implement preferredSize
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
