@@ -17,7 +17,7 @@ class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
         itemCount: 10,
 
         itemBuilder: (context, index) {
-          return TaskCard();
+          //return TaskCard();
         },
         separatorBuilder: (context, index) {
           return SizedBox(height: 8);

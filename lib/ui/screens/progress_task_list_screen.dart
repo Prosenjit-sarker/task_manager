@@ -17,7 +17,7 @@ class _ProgressTaskListScreenState extends State<ProgressTaskListScreen> {
         itemCount: 10,
 
         itemBuilder: (context, index) {
-          return TaskCard();
+          //return TaskCard();
         },
         separatorBuilder: (context, index) {
           return SizedBox(height: 8);
