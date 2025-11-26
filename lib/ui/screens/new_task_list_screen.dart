@@ -39,7 +39,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
           children: [
             const SizedBox(),
             buildTaskSummaryList(),
-            const SizedBox(height: 8,),
+            const SizedBox(height: 8),
             Visibility(
               visible: _getNewTaskListInProgress == false,
               replacement: SizedBox(
@@ -51,7 +51,13 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
                 primary: false,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return TaskCard(taskModel: _newTaskList[index]);
+                  return TaskCard(
+                    taskModel: _newTaskList[index],
+                    refreshList: () {
+                      _getNewTaskList();
+                      _getTaskCountList();
+                    },
+                  );
                 },
                 separatorBuilder: (context, index) {
                   return SizedBox(height: 8);

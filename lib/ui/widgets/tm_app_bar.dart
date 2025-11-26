@@ -28,11 +28,11 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Prosenjit Sarker',
+                  AuthController.user?.fullName ?? '',
                   style: textTheme.bodyLarge?.copyWith(color: Colors.white),
                 ),
                 Text(
-                  'prosenjit161@gmail.com',
+                  AuthController.user?.email ?? '',
                   style: textTheme.bodyMedium?.copyWith(color: Colors.white),
                 ),
               ],
