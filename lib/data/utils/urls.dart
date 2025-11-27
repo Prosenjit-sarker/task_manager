@@ -10,4 +10,7 @@ class Urls{
   static const String taskCountUrl = '$_baseUrl/taskStatusCount';
   static  String changeTaskStatusUrl(String taskId, String status) =>
       '$_baseUrl/UpdateTaskStatus/$taskId/$status';
+
+  static  String delelteTaskUrl(String taskId) =>
+      '$_baseUrl/deleteTask/$taskId';
 }

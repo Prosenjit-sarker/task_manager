@@ -16,6 +16,7 @@ class TaskCard extends StatefulWidget {
 
 class _TaskCardState extends State<TaskCard> {
   bool _changeStatusInProgress = false;
+  bool _deleteTaskInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +51,17 @@ class _TaskCardState extends State<TaskCard> {
                   ),
                 ),
                 Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.delete, color: Colors.grey),
+                Visibility(
+                  visible: _deleteTaskInProgress == false,
+                  replacement: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  child: IconButton(
+                    onPressed: (){
+                      _deleteTask();
+                    },
+                    icon: Icon(Icons.delete, color: Colors.grey),
+                  ),
                 ),
                 Visibility(
                   visible: _changeStatusInProgress == false,
@@ -149,6 +158,23 @@ class _TaskCardState extends State<TaskCard> {
       showSnackBarMessage(context, response.errorMessage);
     }
   }
+
+  Future<void> _deleteTask() async {
+    _deleteTaskInProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkCaller.getRequest(
+      Urls.delelteTaskUrl(widget.taskModel.id),
+    );
+    if (response.isSuccess) {
+      widget.refreshList();
+
+    }else{
+      _deleteTaskInProgress = false;
+      setState(() {});
+      showSnackBarMessage(context, response.errorMessage);
+    }
+  }
+
   Color _getStatusColor(String status) {
     switch (status) {
       case 'New':
