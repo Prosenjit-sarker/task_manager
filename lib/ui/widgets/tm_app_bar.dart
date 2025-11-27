@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:task_manager/ui/screens/sign_in_screen.dart';
 
@@ -23,7 +25,11 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Row(
           spacing: 12,
           children: [
-            CircleAvatar(),
+            CircleAvatar(
+               child: AuthController.user!.photo.isEmpty
+                  ? Icon(Icons.person)
+                  : Image.memory(base64Decode(AuthController.user!.photo)),
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -172,7 +172,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     if (_pickedImage != null) {
       // image should less than 100kb
       Uint8List imageByte = await _pickedImage!.readAsBytes();
-      requestBody['photo'] = jsonEncode(imageByte);
+      requestBody['photo'] = base64Encode(imageByte);
     }
     final NetworkResponse response = await NetworkCaller.postRequest(
       Urls.updateProfileUrl,
