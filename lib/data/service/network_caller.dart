@@ -53,6 +53,8 @@ class NetworkCaller {
   static Future<NetworkResponse> postRequest(
     String url, {
     Map<String, dynamic>? body,
+        Map<String, String>? headers,
+
   }) async {
     try {
       Uri uri = Uri.parse(url);
@@ -63,6 +65,7 @@ class NetworkCaller {
         headers: {
           'Content-Type': 'application/json',
           'token': AuthController.accessToken ?? '',
+          if (headers != null) ...headers
         },
         body: jsonEncode(body),
       );

@@ -9,9 +9,17 @@ class Urls{
   static const String completedTasksUrl = '$_baseUrl/listTaskByStatus/Completed';
   static const String taskCountUrl = '$_baseUrl/taskStatusCount';
   static const String updateProfileUrl = '$_baseUrl/ProfileUpdate';
+  static String resetPasswordUrl = '$_baseUrl/RecoverResetPassword';
+
   static  String changeTaskStatusUrl(String taskId, String status) =>
       '$_baseUrl/UpdateTaskStatus/$taskId/$status';
 
   static  String delelteTaskUrl(String taskId) =>
       '$_baseUrl/deleteTask/$taskId';
+  static String forgotPasswordUrl(String email) =>
+      '$_baseUrl/RecoverVerifyEmail/$email';
+  static String verifyOtpUrl(String email, String otp) =>
+      '$_baseUrl/RecoverVerifyOtp/$email/$otp';
+
+
 }
