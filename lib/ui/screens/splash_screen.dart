@@ -32,15 +32,21 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       Navigator.pushReplacementNamed(context, SignInScreen.name);
     }
-
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ScreenBackground(
-        child: Center(child: SvgPicture.asset(AssetPaths.logoSvg, width: 120,)),
+        child: Center(
+          child: SvgPicture.network(
+            'https://www.svgrepo.com/show/7310/book-and-pen.svg',
+            width: 200,
+            height: 200,
+            placeholderBuilder: (context) => CircularProgressIndicator(),
+
+          ),
+        ),
       ),
     );
   }
