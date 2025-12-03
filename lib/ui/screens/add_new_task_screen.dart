@@ -102,6 +102,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     if (response.isSuccess) {
       _clearTextFields();
       showSnackBarMessage(context, 'New task added');
+      Navigator.pop(context, true);
     } else {
       showSnackBarMessage(context, response.errorMessage);
     }
@@ -117,4 +118,5 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     _descriptionTEController.dispose();
     super.dispose();
   }
+
 }

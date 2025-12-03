@@ -74,8 +74,13 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     );
   }
 
-  void _onTapAddNewTaskButton() {
-    Navigator.pushNamed(context, AddNewTaskScreen.name);
+  void _onTapAddNewTaskButton() async {
+    final result = await Navigator.pushNamed(context, AddNewTaskScreen.name);
+
+    if (result == true) {
+      _getNewTaskList();     // Task list refresh
+      _getTaskCountList();   // Summary counter refresh
+    }
   }
 
   Widget buildTaskSummaryList() {

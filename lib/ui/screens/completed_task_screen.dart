@@ -51,7 +51,7 @@ class _CompletedTaskListScreenState extends State<CompletedTaskListScreen> {
     _getCompletedTaskListInProgress = true;
     setState(() {});
     final NetworkResponse response = await NetworkCaller.getRequest(
-      Urls.progressTasksUrl,
+      Urls.completedTasksUrl,
     );
     if (response.isSuccess) {
       List<TaskModel> list = [];
