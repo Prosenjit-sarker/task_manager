@@ -65,6 +65,7 @@ class TaskManager extends StatelessWidget {
         scaffoldBackgroundColor: Colors.green.shade50,
       ),
 
+
       routes: <String, WidgetBuilder> {
         SplashScreen.name : (_) => SplashScreen(),
         SignInScreen.name : (_) => SignInScreen(),

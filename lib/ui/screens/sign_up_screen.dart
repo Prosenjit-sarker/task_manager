@@ -25,6 +25,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _signUpInProgress = false;
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -99,17 +100,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
                       return null;
                     },
-                  ),
-                  TextFormField(
-                    obscureText: false,
+                  ),TextFormField(
                     controller: _passwordTEController,
-                    decoration: InputDecoration(hintText: 'Password'),
+                    obscureText: !_isPasswordVisible,   // show/hide control
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
                     validator: (String? value) {
                       if (value?.isEmpty ?? true) {
-                        return 'Enter a your first name';
+                        return 'Enter your password';
                       }
                       if (value!.length < 7) {
-                        return 'Enter a password more than 6 latter';
+                        return 'Enter a password more than 6 letters';
                       }
                       return null;
                     },

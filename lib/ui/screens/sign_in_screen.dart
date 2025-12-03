@@ -28,6 +28,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _signInProgress  = false;
+  bool _isPasswordVisible = false;
 
 
   @override
@@ -66,19 +67,32 @@ class _SignInScreenState extends State<SignInScreen> {
                     },
                   ),
                   TextFormField(
-                      obscureText: false,
-                      controller: _passwordTEController,
-                      decoration: InputDecoration(hintText: 'Password'),
+                    controller: _passwordTEController,
+                    obscureText: !_isPasswordVisible,   // show/hide
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
                     validator: (String? value) {
                       if (value?.isEmpty ?? true) {
-                        return 'Enter a your first name';
+                        return 'Enter your password';
                       }
                       if (value!.length < 7) {
-                        return 'Enter a password more than 6 latter';
+                        return 'Enter a password more than 6 characters';
                       }
                       return null;
                     },
                   ),
+
                   const SizedBox(height: 8),
                   Visibility(
                     visible: _signInProgress == false,

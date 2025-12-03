@@ -19,6 +19,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _newPassController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
   bool _setpasswordInProgress = false;
+  bool _isNewPassVisible = false;
+  bool _obscureText = true;
 
   late String email;
   late String otp;
@@ -56,14 +58,39 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _newPassController,
-                  obscureText: true,
-                  decoration: const InputDecoration(hintText: 'New Password'),
+                  obscureText: !_isNewPassVisible,
+                  decoration: InputDecoration(
+                    hintText: 'New Password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isNewPassVisible ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isNewPassVisible = !_isNewPassVisible;
+                        });
+                      },
+                    ),
+                  ),
                 ),
+
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _confirmPassController,
-                  obscureText: true,
-                  decoration: const InputDecoration(hintText: 'Confirm Password'),
+                  obscureText: _obscureText,
+                  decoration: InputDecoration(
+                    hintText: 'Confirm Password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
