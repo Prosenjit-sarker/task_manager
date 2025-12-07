@@ -39,13 +39,11 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: ScreenBackground(
         child: Center(
-          child: SvgPicture.network(
-            'https://www.svgrepo.com/show/7310/book-and-pen.svg',
-            width: 200,
-            height: 200,
+          child: SvgPicture.asset(AssetPaths.logoSvg,
+            width: 120,
+            height: 120,
             placeholderBuilder: (context) => CircularProgressIndicator(),
-
-          ),
+          )
         ),
       ),
     );

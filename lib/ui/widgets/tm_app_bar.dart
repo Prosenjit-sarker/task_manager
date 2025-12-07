@@ -26,10 +26,20 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
           spacing: 12,
           children: [
             CircleAvatar(
-               child: AuthController.user!.photo.isEmpty
-                  ? Icon(Icons.person)
-                  : Image.memory(base64Decode(AuthController.user!.photo)),
+              radius: 20,
+              backgroundColor: Colors.white,
+              child: ClipOval(
+                child: AuthController.user!.photo.isEmpty
+                    ? Icon(Icons.person, size: 24)
+                    : Image.memory(
+                  base64Decode(AuthController.user!.photo),
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover, // ⭐ MOST IMPORTANT
+                ),
+              ),
             ),
+
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -56,7 +66,7 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
               (predicate) => false,
             );
           },
-          icon: Icon(Icons.logout),
+          icon: Icon(Icons.logout,color: Colors.white,),
         ),
       ],
     );

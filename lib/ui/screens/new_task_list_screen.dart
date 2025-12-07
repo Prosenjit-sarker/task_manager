@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/data/models/task_model.dart';
 import 'package:task_manager/data/service/network_caller.dart';
-
 import '../../data/models/task_count_model.dart';
 import '../../data/utils/urls.dart';
 import '../widgets/centered_circular_progress.dart';
