@@ -1,14 +1,12 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager/data/models/user_model.dart';
-import 'package:task_manager/data/service/network_caller.dart';
+import 'package:provider/provider.dart';
+import 'package:task_manager/ui/providers/sign_in_provider.dart';
 import 'package:task_manager/ui/screens/sign_up_screen.dart';
 
 import 'package:task_manager/ui/widgets/screen_background.dart';
 
-import '../../data/utils/urls.dart';
-import '../controllers/auth_controlle.dart';
 import '../widgets/snack_bar_message.dart';
 import 'forgot_password_email_screen.dart';
 import 'main_bottom_nav_holder_screen.dart';
@@ -27,7 +25,6 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool _signInProgress = false;
   bool _isPasswordVisible = false;
 
   @override
@@ -45,7 +42,10 @@ class _SignInScreenState extends State<SignInScreen> {
                 spacing: 8,
                 children: [
                   const SizedBox(height: 60),
-                  Text('Get Started With', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Get Started With',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _emailTEController,
@@ -66,7 +66,11 @@ class _SignInScreenState extends State<SignInScreen> {
                     decoration: InputDecoration(
                       hintText: 'Password',
                       suffixIcon: IconButton(
-                        icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
                         onPressed: () {
                           setState(() {
                             _isPasswordVisible = !_isPasswordVisible;
@@ -86,27 +90,41 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
 
                   const SizedBox(height: 8),
-                  Visibility(
-                    visible: _signInProgress == false,
-                    replacement: Center(child: CircularProgressIndicator()),
+                  Consumer<SignInProvider>(
+                    builder: (context, signInProvider, child) {
+                      return Visibility(
+                        visible: signInProvider.signInProgress == false,
+                        replacement: Center(child: CircularProgressIndicator()),
 
-                    child: FilledButton(onPressed: _onTapSignInButton, child: Icon(Icons.arrow_circle_right_outlined)),
+                        child: FilledButton(
+                          onPressed: _onTapSignInButton,
+                          child: Icon(Icons.arrow_circle_right_outlined),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 24),
 
                   Center(
                     child: Column(
                       children: [
-                        TextButton(onPressed: _onTapForgotPasswordButton, child: Text('Forgot Password?')),
+                        TextButton(
+                          onPressed: _onTapForgotPasswordButton,
+                          child: Text('Forgot Password?'),
+                        ),
                         RichText(
                           text: TextSpan(
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
                             text: "Don't have an account? ",
                             children: [
                               TextSpan(
                                 style: TextStyle(color: Colors.green),
                                 text: 'Sing Up',
-                                recognizer: TapGestureRecognizer()..onTap = _onTapSignUpButton,
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = _onTapSignUpButton,
                               ),
                             ],
                           ),
@@ -131,26 +149,17 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _signIn() async {
-    _signInProgress = true;
-    setState(() {});
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "password": _passwordTEController.text,
-    };
-    final NetworkResponse response = await NetworkCaller.postRequest(Urls.loginUrl, body: requestBody);
-    _signInProgress = false;
-    if (response.isSuccess) {
-      UserModel userModel = UserModel.formJson(response.body['data']);
-      String accessToken = response.body['token'];
-      await AuthController.saveUserData(accessToken, userModel);
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, MainBottomNavHolderScreen.name);
-      }
+    final bool isSuccess = await context.read<SignInProvider>().signIn(
+      _emailTEController.text.trim(),
+      _passwordTEController.text,
+    );
+    if (isSuccess) {
+      Navigator.pushReplacementNamed(context, MainBottomNavHolderScreen.name);
     } else {
-      setState(() {});
-      if (mounted) {
-        showSnackBarMessage(context, response.errorMessage);
-      }
+      showSnackBarMessage(
+        context,
+        context.read<SignInProvider>().errorMessage!,
+      );
     }
   }
 

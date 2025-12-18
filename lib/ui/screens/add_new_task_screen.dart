@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
 import 'package:task_manager/ui/widgets/tm_app_bar.dart';
 
 import '../../data/service/network_caller.dart';
 import '../../data/utils/urls.dart';
+import '../providers/new_task_list_provider.dart';
 import '../widgets/snack_bar_message.dart';
 
 class AddNewTaskScreen extends StatefulWidget {
@@ -101,6 +103,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
 
     if (response.isSuccess) {
       _clearTextFields();
+      context.read<NewTaskListProvider>().getNewTaskList();
       showSnackBarMessage(context, 'New task added');
       Navigator.pop(context, true);
     } else {
