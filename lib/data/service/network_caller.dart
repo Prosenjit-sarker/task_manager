@@ -12,48 +12,31 @@ class NetworkCaller {
       Uri uri = Uri.parse(url);
 
       _logRequest(url);
-      Response response = await get(
-        uri,
-        headers: {'token': AuthController.accessToken ?? ''},
-      );
+      Response response = await get(uri, headers: {'token': AuthController.accessToken ?? ''});
       _logResponse(url, response);
 
       final decodedData = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        return NetworkResponse(
-          isSuccess: true,
-          responseCode: response.statusCode,
-          body: decodedData,
-        );
-      } else if (response.statusCode == 401){
+        return NetworkResponse(isSuccess: true, responseCode: response.statusCode, body: decodedData);
+      } else if (response.statusCode == 401) {
         _onUnauthorize();
         return NetworkResponse(
           isSuccess: false,
           responseCode: response.statusCode,
           errorMessage: decodedData['Un-authorize'],
         );
-      }
-        else {
-        return NetworkResponse(
-          isSuccess: false,
-          responseCode: response.statusCode,
-          errorMessage: decodedData['data'],
-        );
+      } else {
+        return NetworkResponse(isSuccess: false, responseCode: response.statusCode, errorMessage: decodedData['data']);
       }
     } catch (e) {
-      return NetworkResponse(
-        isSuccess: false,
-        responseCode: -1,
-        errorMessage: e.toString(),
-      );
+      return NetworkResponse(isSuccess: false, responseCode: -1, errorMessage: e.toString());
     }
   }
 
   static Future<NetworkResponse> postRequest(
     String url, {
     Map<String, dynamic>? body,
-        Map<String, String>? headers,
-
+    Map<String, String>? headers,
   }) async {
     try {
       Uri uri = Uri.parse(url);
@@ -64,7 +47,7 @@ class NetworkCaller {
         headers: {
           'Content-Type': 'application/json',
           'token': AuthController.accessToken ?? '',
-          if (headers != null) ...headers
+          if (headers != null) ...headers,
         },
         body: jsonEncode(body),
       );
@@ -72,63 +55,15 @@ class NetworkCaller {
 
       final decodedData = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        Future<NetworkResponse> getRequest(String url) async {
-          try {
-            Uri uri = Uri.parse(url);
-
-            _logRequest(url);
-            Response response = await get(uri);
-            _logResponse(url, response);
-
-            final decodedData = jsonDecode(response.body);
-            if (response.statusCode == 200) {
-              return NetworkResponse(
-                isSuccess: true,
-                responseCode: response.statusCode,
-                body: decodedData,
-              );
-            } else if (response.statusCode == 401){
-              _onUnauthorize();
-              return NetworkResponse(
-                isSuccess: false,
-                responseCode: response.statusCode,
-                errorMessage: decodedData['Un-authorize'],
-              );
-            } else {
-              return NetworkResponse(
-                isSuccess: false,
-                responseCode: response.statusCode,
-              );
-            }
-          } catch (e) {
-            return NetworkResponse(
-              isSuccess: false,
-              responseCode: -1,
-              errorMessage: e.toString(),
-            );
-          }
-        }
-
-        return NetworkResponse(
-          isSuccess: true,
-          responseCode: response.statusCode,
-          body: decodedData,
-        );
+        return NetworkResponse(isSuccess: true, responseCode: response.statusCode, body: decodedData);
       } else {
-        return NetworkResponse(
-          isSuccess: false,
-          responseCode: response.statusCode,
-          errorMessage: decodedData['data'],
-        );
+        return NetworkResponse(isSuccess: false, responseCode: response.statusCode, errorMessage: decodedData['data']);
       }
     } catch (e) {
-      return NetworkResponse(
-        isSuccess: false,
-        responseCode: -1,
-        errorMessage: e.toString(),
-      );
+      return NetworkResponse(isSuccess: false, responseCode: -1, errorMessage: e.toString());
     }
   }
+
   static Future<void> _onUnauthorize() async {
     await AuthController.clearUserData();
     Navigator.pushNamed(TaskManager.navigatorKey.currentContext!, SignInScreen.name);

@@ -6,8 +6,10 @@ class TaskCountModel {
 
   factory TaskCountModel.fromJson(Map<String, dynamic> jsonData) {
     return TaskCountModel(
-      id: jsonData['_id'],
-      sum: jsonData['sum'],
+      id: jsonData['_id']?.toString() ?? '',
+      sum: jsonData['sum'] is int
+          ? jsonData['sum']
+          : int.tryParse(jsonData['sum'].toString()) ?? 0,
     );
   }
 }

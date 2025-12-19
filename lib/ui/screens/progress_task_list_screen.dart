@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/ui/widgets/centered_circular_progress.dart';
-
-import '../../data/models/task_model.dart';
-import '../../data/service/network_caller.dart';
-import '../../data/utils/urls.dart';
-import '../widgets/snack_bar_message.dart';
+import 'package:provider/provider.dart';
+import '../providers/progress_task_list_provider.dart';
+import '../widgets/centered_circular_progress.dart';
 import '../widgets/task_card.dart';
 
 class ProgressTaskListScreen extends StatefulWidget {
@@ -15,56 +12,59 @@ class ProgressTaskListScreen extends StatefulWidget {
 }
 
 class _ProgressTaskListScreenState extends State<ProgressTaskListScreen> {
-
-  bool _getProgressTaskListInProgress = false;
-
-  List<TaskCountModel> _progressTaskList = [];
-
   @override
   void initState() {
     super.initState();
-    _getProgressTaskList();
+    context.read<ProgressTaskListProvider>().getProgressTaskList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Visibility(
-        visible: _getProgressTaskListInProgress == false,
-        replacement: CenteredCircularProgress(),
-        child: ListView.separated(
-          itemCount: _progressTaskList.length,
+      body: Consumer<ProgressTaskListProvider>(
+        builder: (context, provider, child) {
+          if (provider.getProgressTaskListInProgress) {
+            return const CenteredCircularProgress();
+          }
 
-          itemBuilder: (context, index) {
-            return TaskCard(taskModel: _progressTaskList[index],
-              refreshList: () {
-                _getProgressTaskList();
-              },);
-          },
-          separatorBuilder: (context, index) {
-            return SizedBox(height: 8);
-          },
-        ),
+          if (provider.errorMessage != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(provider.errorMessage ?? 'Something went wrong'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<ProgressTaskListProvider>().getProgressTaskList();
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (provider.progressTaskList.isEmpty) {
+            return const Center(child: Text('No progress tasks available'));
+          }
+
+          return ListView.separated(
+            itemCount: provider.progressTaskList.length,
+            itemBuilder: (context, index) {
+              return TaskCard(
+                taskModel: provider.progressTaskList[index],
+                refreshList: () {
+                  context.read<ProgressTaskListProvider>().getProgressTaskList();
+                },
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(height: 8);
+            },
+          );
+        },
       ),
-
     );
-  }
-  Future<void> _getProgressTaskList() async {
-    _getProgressTaskListInProgress = true;
-    setState(() {});
-    final NetworkResponse response = await NetworkCaller.getRequest(
-      Urls.progressTasksUrl,
-    );
-    if (response.isSuccess) {
-      List<TaskCountModel> list = [];
-      for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskCountModel.formJson(jsonData));
-      }
-     _progressTaskList = list;
-    } else {
-      showSnackBarMessage(context, response.errorMessage);
-    }
-    _getProgressTaskListInProgress  = false;
-    setState(() {});
   }
 }

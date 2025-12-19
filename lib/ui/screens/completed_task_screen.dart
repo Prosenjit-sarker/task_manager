@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../data/models/task_model.dart';
-import '../../data/service/network_caller.dart';
-import '../../data/utils/urls.dart';
+import 'package:provider/provider.dart';
+import '../providers/completed_task_list_provider.dart';
 import '../widgets/centered_circular_progress.dart';
-import '../widgets/snack_bar_message.dart';
 import '../widgets/task_card.dart';
 
 class CompletedTaskListScreen extends StatefulWidget {
@@ -15,55 +12,59 @@ class CompletedTaskListScreen extends StatefulWidget {
 }
 
 class _CompletedTaskListScreenState extends State<CompletedTaskListScreen> {
-  bool _getCompletedTaskListInProgress = false;
-
-  List<TaskCountModel> _completedTaskList = [];
   @override
   void initState() {
-    _getCompletedTaskList();
     super.initState();
+    context.read<CompletedTaskListProvider>().getCompletedTaskList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Visibility(
-        visible: _getCompletedTaskListInProgress == false,
-        replacement: CenteredCircularProgress(),
-        child: ListView.separated(
-          itemCount: _completedTaskList.length,
+      body: Consumer<CompletedTaskListProvider>(
+        builder: (context, provider, child) {
+          if (provider.getCompletedTaskListInProgress) {
+            return const CenteredCircularProgress();
+          }
 
-          itemBuilder: (context, index) {
-            return TaskCard(taskModel: _completedTaskList[index], refreshList: () {
-              _getCompletedTaskList();
+          if (provider.errorMessage != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(provider.errorMessage ?? 'Something went wrong'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<CompletedTaskListProvider>().getCompletedTaskList();
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
 
-            },);
-          },
-          separatorBuilder: (context, index) {
-            return SizedBox(height: 8);
-          },
-        ),
+          if (provider.completedTaskList.isEmpty) {
+            return const Center(child: Text('No completed tasks available'));
+          }
+
+          return ListView.separated(
+            itemCount: provider.completedTaskList.length,
+            itemBuilder: (context, index) {
+              return TaskCard(
+                taskModel: provider.completedTaskList[index],
+                refreshList: () {
+                  context.read<CompletedTaskListProvider>().getCompletedTaskList();
+                },
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(height: 8);
+            },
+          );
+        },
       ),
-
     );
-  }
-  Future<void> _getCompletedTaskList() async {
-    _getCompletedTaskListInProgress = true;
-    setState(() {});
-    final NetworkResponse response = await NetworkCaller.getRequest(
-      Urls.completedTasksUrl,
-    );
-    if (response.isSuccess) {
-      List<TaskCountModel> list = [];
-      for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskCountModel.formJson(jsonData));
-      }
-      _completedTaskList = list;
-    } else {
-      showSnackBarMessage(context, response.errorMessage);
-    }
-    _getCompletedTaskListInProgress  = false;
-    setState(() {});
   }
 }
-

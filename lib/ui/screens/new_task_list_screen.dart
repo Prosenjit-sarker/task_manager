@@ -54,6 +54,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
                     return TaskCard(
                       taskModel: provider.newTaskList[index],
                       refreshList: () {
+
                         context
                             .read<NewTaskListProvider>()
                             .getNewTaskList();
@@ -86,6 +87,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     if (result == true) {
       context.read<NewTaskListProvider>().getNewTaskList();
       context.read<TaskCountListProvider>().getTaskCountList();
+
     }
   }
 
