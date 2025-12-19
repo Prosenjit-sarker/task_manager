@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:task_manager/ui/providers/forgot_password_email_provider.dart';
 import 'package:task_manager/ui/providers/forgot_password_verify_otp_provider.dart';
 import 'package:task_manager/ui/providers/new_task_list_provider.dart';
+import 'package:task_manager/ui/providers/reset_password_provider.dart';
 import 'package:task_manager/ui/providers/sign_in_provider.dart';
 import 'package:task_manager/ui/providers/sign_up_provider.dart';
 import 'package:task_manager/ui/providers/task_count_list_provider.dart';
@@ -25,6 +26,7 @@ class TaskManager extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ResetPasswordProvider()),
         ChangeNotifierProvider(create: (_) => ForgotPasswordVerifyOtpProvider()),
         ChangeNotifierProvider(create: (_) => ForgotPasswordEmailProvider()),
         ChangeNotifierProvider(create: (_) => NewTaskListProvider()),

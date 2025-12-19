@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_manager/ui/providers/reset_password_provider.dart';
 import 'package:task_manager/ui/screens/sign_in_screen.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
-
-import '../../data/service/network_caller.dart';
-import '../../data/utils/urls.dart';
 import '../widgets/snack_bar_message.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -18,9 +17,9 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _newPassController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
-  bool _setpasswordInProgress = false;
+
   bool _isNewPassVisible = false;
-  bool _obscureText = true;
+  bool _isConfirmPassVisible = false;
 
   late String email;
   late String otp;
@@ -28,14 +27,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, String>?;
-    if (args != null) {
-      email = args['email'] ?? '';
-      otp = args['otp'] ?? '';
-    } else {
-      email = '';
-      otp = '';
-    }
+    final args =
+    ModalRoute.of(context)!.settings.arguments as Map<String, String>?;
+
+    email = args?['email'] ?? '';
+    otp = args?['otp'] ?? '';
   }
 
   @override
@@ -49,13 +45,18 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 60),
-                Text('Reset Password', style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  'Reset Password',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
                 const SizedBox(height: 8),
                 Text(
                   'Minimum length of password should be more than 8 characters',
                   style: Theme.of(context).textTheme.labelMedium,
                 ),
                 const SizedBox(height: 24),
+
+                /// New Password
                 TextFormField(
                   controller: _newPassController,
                   obscureText: !_isNewPassVisible,
@@ -63,7 +64,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     hintText: 'New Password',
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isNewPassVisible ? Icons.visibility : Icons.visibility_off,
+                        _isNewPassVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -75,34 +78,48 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
 
                 const SizedBox(height: 8),
+
+                /// Confirm Password
                 TextFormField(
                   controller: _confirmPassController,
-                  obscureText: _obscureText,
+                  obscureText: !_isConfirmPassVisible,
                   decoration: InputDecoration(
                     hintText: 'Confirm Password',
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        _isConfirmPassVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
-                          _obscureText = !_obscureText;
+                          _isConfirmPassVisible = !_isConfirmPassVisible;
                         });
                       },
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: Visibility(
-                    visible: !_setpasswordInProgress,
-                    replacement: const Center(child: CircularProgressIndicator()),
-                    child: FilledButton(
-                      onPressed: _onTapConfirmButton,
-                      child: const Text('Confirm'),
-                    ),
-                  ),
+
+                /// Confirm Button / Loader
+                Consumer<ResetPasswordProvider>(
+                  builder: (context, provider, child) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: Visibility(
+                        visible: !provider.inProgress,
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: FilledButton(
+                          onPressed: () =>
+                              _onTapConfirmButton(context, provider),
+                          child: const Text('Confirm'),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -112,48 +129,47 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
-  Future<void> _onTapConfirmButton() async {
+  Future<void> _onTapConfirmButton(
+      BuildContext context,
+      ResetPasswordProvider provider,
+      ) async {
     final newPass = _newPassController.text.trim();
     final confirmPass = _confirmPassController.text.trim();
 
     if (newPass.isEmpty || confirmPass.isEmpty) {
-      showSnackBarMessage(context, "Password fields cannot be empty");
+      showSnackBarMessage(context, 'Password fields cannot be empty');
       return;
     }
 
     if (newPass.length < 8) {
-      showSnackBarMessage(context, "Password must be at least 8 characters");
+      showSnackBarMessage(
+          context, 'Password must be at least 8 characters');
       return;
     }
 
     if (newPass != confirmPass) {
-      showSnackBarMessage(context, "Passwords do not match");
+      showSnackBarMessage(context, 'Passwords do not match');
       return;
     }
 
-    setState(() {
-      _setpasswordInProgress = true;
-    });
-
-    final response = await NetworkCaller.postRequest(
-      Urls.resetPasswordUrl,
-      body: {
-        "email": email,
-        "OTP": otp,
-        "password": newPass,
-      },
-      headers: {"Content-Type": "application/json"},
+    final isSuccess = await provider.resetPassword(
+      email: email,
+      otp: otp,
+      password: newPass,
     );
 
-    setState(() {
-      _setpasswordInProgress = false;
-    });
-
-    if (response.isSuccess) {
-      showSnackBarMessage(context, "Password reset successful");
-      Navigator.pushNamedAndRemoveUntil(context, SignInScreen.name, (p) => false);
+    if (isSuccess) {
+      showSnackBarMessage(context, 'Password reset successful');
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        SignInScreen.name,
+            (route) => false,
+      );
     } else {
-      showSnackBarMessage(context, response.errorMessage);
+      showSnackBarMessage(
+        context,
+        provider.errorMessage ?? 'Password reset failed',
+      );
     }
   }
 
