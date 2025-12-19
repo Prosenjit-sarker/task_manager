@@ -33,7 +33,7 @@ class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(provider.errorMessage ?? 'Something went wrong'),
-                  const SizedBox(height: 16),
+                  const Spacer(flex: 1),
                   ElevatedButton(
                     onPressed: () {
                       context.read<CancelledTaskListProvider>().getCancelledTaskList();
@@ -60,7 +60,7 @@ class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
               );
             },
             separatorBuilder: (context, index) {
-              return const SizedBox(height: 8);
+              return const SizedBox.shrink();
             },
           );
         },

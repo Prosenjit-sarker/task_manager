@@ -36,11 +36,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 8,
                     children: [
-                      // ignore: prefer_const_constructors
-                      SizedBox(height: 36),
+                      const Spacer(flex: 1),
                       Text('Update Profiles', style: Theme.of(context).textTheme.titleLarge),
-                      // ignore: prefer_const_constructors
-                      SizedBox(height: 8),
                       GestureDetector(
                         onTap: () {
                           provider.pickImage();
@@ -94,8 +91,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           return null;
                         },
                       ),
-                      // ignore: prefer_const_constructors
-                      SizedBox(height: 8),
                       Visibility(
                         visible: !provider.updateProfileInProgress,
                         replacement: const Center(child: CircularProgressIndicator()),
