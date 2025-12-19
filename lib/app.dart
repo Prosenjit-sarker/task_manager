@@ -12,7 +12,7 @@ import 'package:task_manager/ui/providers/task_count_list_provider.dart';
 import 'package:task_manager/ui/providers/progress_task_list_provider.dart';
 import 'package:task_manager/ui/providers/completed_task_list_provider.dart';
 import 'package:task_manager/ui/providers/cancelled_task_list_provider.dart';
-import 'package:task_manager/ui/providers/update_profile_provider.dart';
+import 'package:task_manager/data/providers/update_profile_provider.dart';
 import 'package:task_manager/data/providers/task_card_provider.dart';
 import 'package:task_manager/ui/screens/add_new_task_screen.dart';
 import 'package:task_manager/ui/screens/forgot_password_email_screen.dart';
