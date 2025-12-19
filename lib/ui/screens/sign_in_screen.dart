@@ -170,4 +170,5 @@ class _SignInScreenState extends State<SignInScreen> {
   void _onTapSignUpButton() {
     Navigator.pushNamed(context, SignUpScreen.name);
   }
+
 }

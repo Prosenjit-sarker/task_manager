@@ -30,12 +30,12 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
           children: [
             const SizedBox(height: 8),
 
-            /// 🔹 Task Summary
+
             _buildTaskSummary(),
 
             const SizedBox(height: 8),
 
-            /// 🔹 Task List
+
             Consumer<NewTaskListProvider>(
               builder: (context, provider, child) {
                 if (provider.getNewTaskListInProgress) {
@@ -77,7 +77,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     );
   }
 
-  /// 🔹 Add Task Button
+
   Future<void> _onTapAddNewTaskButton() async {
     final result = await Navigator.pushNamed(
       context,
@@ -91,7 +91,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     }
   }
 
-  /// 🔹 Task Summary Widget
+
   Widget _buildTaskSummary() {
     return SizedBox(
       height: 60,
