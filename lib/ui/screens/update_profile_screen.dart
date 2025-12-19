@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:task_manager/ui/widgets/screen_background.dart';
 import 'package:task_manager/ui/widgets/snack_bar_message.dart';
-import 'package:task_manager/data/providers/update_profile_provider.dart';
+import 'package:task_manager/ui/providers/update_profile_provider.dart';
 import '../widgets/photo_picker.dart';
 import '../widgets/tm_app_bar.dart';
 

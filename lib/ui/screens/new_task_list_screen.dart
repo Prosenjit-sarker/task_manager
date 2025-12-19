@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/new_task_list_provider.dart';
 import '../providers/task_count_list_provider.dart';
 import '../widgets/centered_circular_progress.dart';
-import '../widgets/task_card.dart';
+import '../providers/task_card.dart';
 import 'add_new_task_screen.dart';
 
 class NewTaskListScreen extends StatefulWidget {

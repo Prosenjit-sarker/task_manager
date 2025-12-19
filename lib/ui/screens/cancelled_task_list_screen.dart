@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cancelled_task_list_provider.dart';
 import '../widgets/centered_circular_progress.dart';
-import '../widgets/task_card.dart';
+import '../providers/task_card.dart';
 
 class CancelledTaskListScreen extends StatefulWidget {
   const CancelledTaskListScreen({super.key});

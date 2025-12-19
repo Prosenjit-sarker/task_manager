@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import '../service/network_caller.dart';
-import '../utils/urls.dart';
+import '../../data/service/network_caller.dart';
+import '../../data/utils/urls.dart';
 
 class TaskCardProvider extends ChangeNotifier {
   bool _changeStatusInProgress = false;

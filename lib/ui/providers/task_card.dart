@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_manager/data/models/task_model.dart';
-import 'package:task_manager/data/providers/task_card_provider.dart';
+import 'package:task_manager/ui/providers/task_card_provider.dart';
 import 'package:task_manager/ui/widgets/snack_bar_message.dart';
 
 class TaskCard extends StatelessWidget {
