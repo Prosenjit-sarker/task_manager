@@ -1,10 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:task_manager/ui/providers/forgot_password_email_provider.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
-
-import '../../data/service/network_caller.dart';
-import '../../data/utils/urls.dart';
-import '../widgets/snack_bar_message.dart';
+import 'package:task_manager/ui/widgets/snack_bar_message.dart';
 import 'forgot_password_verify_otp_screen.dart';
 
 class ForgotPasswordEmailScreen extends StatefulWidget {
@@ -13,13 +12,13 @@ class ForgotPasswordEmailScreen extends StatefulWidget {
   static const String name = '/forgot-password-email';
 
   @override
-  State<ForgotPasswordEmailScreen> createState() => _SignInScreenState();
+  State<ForgotPasswordEmailScreen> createState() =>
+      _ForgotPasswordEmailScreenState();
 }
 
-class _SignInScreenState extends State<ForgotPasswordEmailScreen> {
+class _ForgotPasswordEmailScreenState
+    extends State<ForgotPasswordEmailScreen> {
   final TextEditingController _emailController = TextEditingController();
-  bool _sending = false;
-
 
   @override
   Widget build(BuildContext context) {
@@ -33,53 +32,61 @@ class _SignInScreenState extends State<ForgotPasswordEmailScreen> {
             children: [
               const SizedBox(height: 60),
               Text(
-
                 'Your Email Address',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .titleLarge,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               Text(
                 'A 6 digit verification OTP will be sent to this email address',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .labelMedium,
+                style: Theme.of(context).textTheme.labelMedium,
               ),
               const SizedBox(height: 8),
+
+              /// Email Field
               TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(hintText: 'Email')),
-              const SizedBox(height: 8),
-              Visibility(
-                visible: _sending == false,
-                replacement: Center(
-                  child: CircularProgressIndicator(),
-                ),
-                child: FilledButton(
-                  onPressed: _sending ? null : _onTapSubmitButton,
-                  child: Icon(Icons.arrow_circle_right_outlined),
-                ),
+                controller: _emailController,
+                decoration: const InputDecoration(hintText: 'Email'),
               ),
+
+              const SizedBox(height: 8),
+
+              /// Button / Loader
+              Consumer<ForgotPasswordEmailProvider>(
+                builder: (context, provider, child) {
+                  return Visibility(
+                    visible: !provider.sending,
+                    replacement: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    child: FilledButton(
+                      onPressed: () =>
+                          _onTapSubmitButton(context, provider),
+                      child: const Icon(
+                        Icons.arrow_circle_right_outlined,
+                      ),
+                    ),
+                  );
+                },
+              ),
+
               const SizedBox(height: 24),
+
+              /// Sign In Text
               Center(
                 child: RichText(
                   text: TextSpan(
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w500,
                     ),
                     text: "Have an account? ",
                     children: [
                       TextSpan(
-                        style: TextStyle(color: Colors.green),
-                        text: 'Sing In',
+                        style: const TextStyle(color: Colors.green),
+                        text: 'Sign In',
                         recognizer: TapGestureRecognizer()
                           ..onTap = _onTapSignInButton,
                       ),
                     ],
-
                   ),
                 ),
               ),
@@ -90,38 +97,32 @@ class _SignInScreenState extends State<ForgotPasswordEmailScreen> {
     );
   }
 
-
-  Future<void> _onTapSubmitButton() async {
+  Future<void> _onTapSubmitButton(
+      BuildContext context,
+      ForgotPasswordEmailProvider provider,
+      ) async {
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Enter your email")),
-      );
+      showSnackBarMessage(context, 'Enter your email');
       return;
     }
 
-    setState(() => _sending = true);
+    final isSuccess = await provider.sendOtp(email);
 
-    final response = await NetworkCaller.getRequest(
-      Urls.forgotPasswordUrl(email),
-    );
-
-    setState(() => _sending = false);
-
-    if (response.isSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("OTP sent to your email")),
-      );
+    if (isSuccess) {
+      showSnackBarMessage(context, 'OTP sent to your email');
 
       Navigator.pushNamed(
         context,
         ForgotPasswordVerifyOtpScreen.name,
         arguments: email,
       );
-    } else{
-      showSnackBarMessage(context, response.errorMessage);
-
+    } else {
+      showSnackBarMessage(
+        context,
+        provider.errorMessage ?? 'Something went wrong',
+      );
     }
   }
 
@@ -129,4 +130,9 @@ class _SignInScreenState extends State<ForgotPasswordEmailScreen> {
     Navigator.pop(context);
   }
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
+import 'package:task_manager/ui/providers/forgot_password_verify_otp_provider.dart';
 import 'package:task_manager/ui/screens/reset_password_screen.dart';
 import 'package:task_manager/ui/screens/sign_in_screen.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
-
-import '../../data/service/network_caller.dart';
-import '../../data/utils/urls.dart';
 import '../widgets/snack_bar_message.dart';
 
 class ForgotPasswordVerifyOtpScreen extends StatefulWidget {
@@ -21,8 +20,7 @@ class ForgotPasswordVerifyOtpScreen extends StatefulWidget {
 
 class _ForgotPasswordVerifyOtpScreenState
     extends State<ForgotPasswordVerifyOtpScreen> {
-  bool _verifyInProgress = false;
-  String _otp = "";
+  String _otp = '';
   late String email;
 
   @override
@@ -42,11 +40,18 @@ class _ForgotPasswordVerifyOtpScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 60),
-                Text('OTP Verification', style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  'OTP Verification',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
                 const SizedBox(height: 8),
-                Text('A 6 digit verification code has been sent to $email',
-                    style: Theme.of(context).textTheme.labelMedium),
+                Text(
+                  'A 6 digit verification code has been sent to $email',
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
                 const SizedBox(height: 16),
+
+                /// OTP Field
                 PinCodeTextField(
                   appContext: context,
                   length: 6,
@@ -68,29 +73,47 @@ class _ForgotPasswordVerifyOtpScreenState
                   enableActiveFill: true,
                   backgroundColor: Colors.transparent,
                 ),
+
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: Visibility(
-                    visible: !_verifyInProgress,
-                    replacement: const Center(child: CircularProgressIndicator()),
-                    child: FilledButton(
-                      onPressed: _onTapVerifyButton,
-                      child: const Text('Verify'),
-                    ),
-                  ),
+
+                /// Verify Button / Loader
+                Consumer<ForgotPasswordVerifyOtpProvider>(
+                  builder: (context, provider, child) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: Visibility(
+                        visible: !provider.verifyInProgress,
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: FilledButton(
+                          onPressed: () =>
+                              _onTapVerifyButton(context, provider),
+                          child: const Text('Verify'),
+                        ),
+                      ),
+                    );
+                  },
                 ),
+
                 const SizedBox(height: 24),
+
+                /// Sign In Text
                 Center(
                   child: RichText(
                     text: TextSpan(
                       text: "Have an account? ",
-                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
                       children: [
                         TextSpan(
                           text: 'Sign In',
                           style: const TextStyle(
-                              color: Colors.green, fontWeight: FontWeight.bold),
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = _onTapSignInButton,
                         ),
@@ -106,34 +129,42 @@ class _ForgotPasswordVerifyOtpScreenState
     );
   }
 
-  void _onTapSignInButton() {
-    Navigator.pushNamedAndRemoveUntil(context, SignInScreen.name, (p) => false);
-  }
-
-  Future<void> _onTapVerifyButton() async {
+  Future<void> _onTapVerifyButton(
+      BuildContext context,
+      ForgotPasswordVerifyOtpProvider provider,
+      ) async {
     if (_otp.length != 6) {
-      showSnackBarMessage(context, "Enter 6 digit OTP");
+      showSnackBarMessage(context, 'Enter 6 digit OTP');
       return;
     }
 
-    setState(() {
-      _verifyInProgress = true;
-    });
+    final isSuccess = await provider.verifyOtp(
+      email: email,
+      otp: _otp,
+    );
 
-    final response = await NetworkCaller.getRequest(Urls.verifyOtpUrl(email, _otp));
-
-    setState(() {
-      _verifyInProgress = false;
-    });
-
-    if (response.isSuccess) {
+    if (isSuccess) {
       Navigator.pushNamed(
         context,
         ResetPasswordScreen.name,
-        arguments: {"email": email, "otp": _otp},
+        arguments: {
+          'email': email,
+          'otp': _otp,
+        },
       );
     } else {
-      showSnackBarMessage(context, response.errorMessage);
+      showSnackBarMessage(
+        context,
+        provider.errorMessage ?? 'OTP verification failed',
+      );
     }
+  }
+
+  void _onTapSignInButton() {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      SignInScreen.name,
+          (route) => false,
+    );
   }
 }
