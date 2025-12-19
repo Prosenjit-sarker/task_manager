@@ -9,10 +9,10 @@ class NewTaskListProvider extends ChangeNotifier {
 
   String? _errorMessage;
 
-  List<TaskModel> _newTaskList = [];
+  List<TaskCountModel> _newTaskList = [];
 
   bool get getNewTaskListInProgress => _getNewTaskListInProgress;
-  List<TaskModel> get newTaskList => _newTaskList;
+  List<TaskCountModel> get newTaskList => _newTaskList;
   String? get errorMessage => _errorMessage;
 
   Future<bool> getNewTaskList() async {
@@ -24,9 +24,9 @@ class NewTaskListProvider extends ChangeNotifier {
       Urls.newTasksUrl,
     );
     if (response.isSuccess) {
-      List<TaskModel> list = [];
+      List<TaskCountModel> list = [];
       for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskModel.formJson(jsonData));
+        list.add(TaskCountModel.formJson(jsonData));
       }
       _newTaskList = list;
       _errorMessage = null;

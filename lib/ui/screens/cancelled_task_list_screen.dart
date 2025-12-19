@@ -17,7 +17,7 @@ class CancelledTaskListScreen extends StatefulWidget {
 class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
 
   bool _getCancelledTaskListInProgress = false;
-  List<TaskModel> _cancelledTaskList = [];
+  List<TaskCountModel> _cancelledTaskList = [];
 
   @override
   void initState() {
@@ -55,9 +55,9 @@ class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
       Urls.cancelledTasksUrl,
     );
     if (response.isSuccess) {
-      List<TaskModel> list = [];
+      List<TaskCountModel> list = [];
       for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskModel.formJson(jsonData));
+        list.add(TaskCountModel.formJson(jsonData));
       }
       _cancelledTaskList = list;
     } else {

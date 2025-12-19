@@ -18,7 +18,7 @@ class _ProgressTaskListScreenState extends State<ProgressTaskListScreen> {
 
   bool _getProgressTaskListInProgress = false;
 
-  List<TaskModel> _progressTaskList = [];
+  List<TaskCountModel> _progressTaskList = [];
 
   @override
   void initState() {
@@ -56,9 +56,9 @@ class _ProgressTaskListScreenState extends State<ProgressTaskListScreen> {
       Urls.progressTasksUrl,
     );
     if (response.isSuccess) {
-      List<TaskModel> list = [];
+      List<TaskCountModel> list = [];
       for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskModel.formJson(jsonData));
+        list.add(TaskCountModel.formJson(jsonData));
       }
      _progressTaskList = list;
     } else {

@@ -17,7 +17,7 @@ class CompletedTaskListScreen extends StatefulWidget {
 class _CompletedTaskListScreenState extends State<CompletedTaskListScreen> {
   bool _getCompletedTaskListInProgress = false;
 
-  List<TaskModel> _completedTaskList = [];
+  List<TaskCountModel> _completedTaskList = [];
   @override
   void initState() {
     _getCompletedTaskList();
@@ -54,9 +54,9 @@ class _CompletedTaskListScreenState extends State<CompletedTaskListScreen> {
       Urls.completedTasksUrl,
     );
     if (response.isSuccess) {
-      List<TaskModel> list = [];
+      List<TaskCountModel> list = [];
       for (Map<String, dynamic> jsonData in response.body['data']) {
-        list.add(TaskModel.formJson(jsonData));
+        list.add(TaskCountModel.formJson(jsonData));
       }
       _completedTaskList = list;
     } else {

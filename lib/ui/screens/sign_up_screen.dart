@@ -1,8 +1,8 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager/data/service/network_caller.dart';
-import 'package:task_manager/data/utils/urls.dart';
+import 'package:provider/provider.dart';
+import 'package:task_manager/ui/providers/sign_up_provider.dart';
 
 import 'package:task_manager/ui/widgets/screen_background.dart';
 import 'package:task_manager/ui/widgets/snack_bar_message.dart';
@@ -24,7 +24,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool _signUpInProgress = false;
   bool _isPasswordVisible = false;
 
   @override
@@ -44,70 +43,72 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 60),
                   Text(
                     'Join with Us',
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .titleLarge,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
+
+                  /// Email
                   TextFormField(
                     controller: _emailTEController,
-                    decoration: InputDecoration(hintText: 'Email'),
-                    validator: (String? value) {
-                      if (value
-                          ?.trim()
-                          .isEmpty ?? true) {
+                    decoration: const InputDecoration(hintText: 'Email'),
+                    validator: (value) {
+                      if (value?.trim().isEmpty ?? true) {
                         return 'Enter a valid email';
                       }
-                      if (EmailValidator.validate(value!) == false) {
+                      if (!EmailValidator.validate(value!)) {
                         return 'Enter a valid email address';
                       }
                       return null;
                     },
                   ),
+
+                  /// First name
                   TextFormField(
                     controller: _firstNameTEController,
-                    decoration: InputDecoration(hintText: 'First name'),
-                    validator: (String? value) {
-                      if (value
-                          ?.trim()
-                          .isEmpty ?? true) {
-                        return 'Enter a your first name';
+                    decoration: const InputDecoration(hintText: 'First name'),
+                    validator: (value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your first name';
                       }
                       return null;
                     },
                   ),
+
+                  /// Last name
                   TextFormField(
                     controller: _lastNameTEController,
-                    decoration: InputDecoration(hintText: 'Last name'),
-                    validator: (String? value) {
-                      if (value
-                          ?.trim()
-                          .isEmpty ?? true) {
-                        return 'Enter a your last name';
+                    decoration: const InputDecoration(hintText: 'Last name'),
+                    validator: (value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your last name';
                       }
                       return null;
                     },
                   ),
+
+                  /// Mobile
                   TextFormField(
                     controller: _mobileTEController,
-                    decoration: InputDecoration(hintText: 'Mobile'),
-                    validator: (String? value) {
-                      if (value
-                          ?.trim()
-                          .isEmpty ?? true) {
-                        return 'Enter a your Mobile number';
+                    decoration: const InputDecoration(hintText: 'Mobile'),
+                    validator: (value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your mobile number';
                       }
                       return null;
                     },
-                  ),TextFormField(
+                  ),
+
+                  /// Password
+                  TextFormField(
                     controller: _passwordTEController,
-                    obscureText: !_isPasswordVisible,   // show/hide control
+                    obscureText: !_isPasswordVisible,
                     decoration: InputDecoration(
                       hintText: 'Password',
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -116,7 +117,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                       ),
                     ),
-                    validator: (String? value) {
+                    validator: (value) {
                       if (value?.isEmpty ?? true) {
                         return 'Enter your password';
                       }
@@ -126,42 +127,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 8),
-                  Visibility(
-                    visible: _signUpInProgress == false,
-                    replacement: Center(
-                      child: CircularProgressIndicator(),
-                    ),
 
-                    child: FilledButton(
-                      onPressed: _onTapSignUpButton,
-                      child: Icon(Icons.arrow_circle_right_outlined),
-                    ),
+                  const SizedBox(height: 8),
+
+                  /// 🔹 Sign Up Button / Loader
+                  Consumer<SignUpProvider>(
+                    builder: (context, provider, child) {
+                      return Visibility(
+                        visible: !provider.signUpInProgress,
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: FilledButton(
+                          onPressed: () => _onTapSignUpButton(provider),
+                          child: const Icon(
+                              Icons.arrow_circle_right_outlined),
+                        ),
+                      );
+                    },
                   ),
+
                   const SizedBox(height: 24),
 
+                  /// Sign In Text
                   Center(
-                    child: Column(
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            text: "Already have an account? ",
-
-                            children: [
-                              TextSpan(
-                                style: TextStyle(color: Colors.green),
-                                text: 'Sing In',
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = _onTapSignInButton,
-                              ),
-                            ],
-                          ),
+                    child: RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
                         ),
-                      ],
+                        text: "Already have an account? ",
+                        children: [
+                          TextSpan(
+                            style: const TextStyle(color: Colors.green),
+                            text: 'Sign In',
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = _onTapSignInButton,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -173,55 +178,51 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  /// 🔹 Button Action
+  Future<void> _onTapSignUpButton(SignUpProvider provider) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final isSuccess = await provider.signUp(
+      email: _emailTEController.text.trim(),
+      firstName: _firstNameTEController.text.trim(),
+      lastName: _lastNameTEController.text.trim(),
+      mobile: _mobileTEController.text.trim(),
+      password: _passwordTEController.text,
+    );
+
+    if (isSuccess) {
+      _clearTextField();
+      showSnackBarMessage(
+        context,
+        'Registration Successful! Please Sign In.',
+      );
+    } else {
+      showSnackBarMessage(
+        context,
+        provider.errorMessage ?? 'Registration failed',
+      );
+    }
+  }
+
   void _onTapSignInButton() {
     Navigator.pop(context);
   }
 
-  void _onTapSignUpButton() {
-    if (_formKey.currentState!.validate()) {
-      _SignUp();
-    }
-  }
-
-  Future<void> _SignUp() async {
-    _signUpInProgress = true;
-    setState(() {});
-
-    Map<String, dynamic> requestBody = {
-      "email": _emailTEController.text.trim(),
-      "firstName": _firstNameTEController.text.trim(),
-      "lastName": _lastNameTEController.text.trim(),
-      "mobile": _mobileTEController.text.trim(),
-      "password": _passwordTEController.text,
-    };
-    NetworkResponse response = await NetworkCaller.postRequest(
-      Urls.registrationUrl,
-      body: requestBody,
-    );
-    _signUpInProgress = false;
-    setState(() {});
-    if (response.isSuccess) {
-      _clearTextField();
-      showSnackBarMessage(context, 'Registration Successful! Please Sign In.');
-    } else {
-      showSnackBarMessage(context, response.errorMessage);
-    }
-  }
-  void _clearTextField(){
+  void _clearTextField() {
     _emailTEController.clear();
     _firstNameTEController.clear();
     _lastNameTEController.clear();
     _mobileTEController.clear();
     _passwordTEController.clear();
   }
+
   @override
-  void dispose(){
+  void dispose() {
     _emailTEController.dispose();
     _firstNameTEController.dispose();
     _lastNameTEController.dispose();
     _mobileTEController.dispose();
     _passwordTEController.dispose();
     super.dispose();
-
   }
 }

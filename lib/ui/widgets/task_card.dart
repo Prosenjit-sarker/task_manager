@@ -7,7 +7,7 @@ import '../../data/utils/urls.dart';
 
 class TaskCard extends StatefulWidget {
   const TaskCard({super.key, required this.taskModel, required this.refreshList});
-  final TaskModel taskModel;
+  final TaskCountModel taskModel;
   final VoidCallback refreshList;
 
   @override

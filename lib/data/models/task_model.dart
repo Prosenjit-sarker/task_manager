@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class TaskModel {
+class TaskCountModel {
   final String id;
   final String title;
   final String description;
@@ -8,7 +8,7 @@ class TaskModel {
   final String email;
   final String createdDate;
 
-  TaskModel({
+  TaskCountModel({
     required this.id,
     required this.title,
     required this.description,
@@ -16,8 +16,8 @@ class TaskModel {
     required this.email,
     required this.createdDate,
   });
-  factory TaskModel.formJson(Map<String, dynamic> jsonData) {
-    return TaskModel(
+  factory TaskCountModel.formJson(Map<String, dynamic> jsonData) {
+    return TaskCountModel(
       id: jsonData['_id'],
       title: jsonData['title'],
       description: jsonData['description'],
