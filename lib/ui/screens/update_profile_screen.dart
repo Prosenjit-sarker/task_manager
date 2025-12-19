@@ -36,7 +36,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 8,
                     children: [
-                      const Spacer(flex: 1),
+                      // ignore: sized_box_for_spacer
+                      SizedBox(height: 20),
                       Text('Update Profiles', style: Theme.of(context).textTheme.titleLarge),
                       GestureDetector(
                         onTap: () {
@@ -94,21 +95,25 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       Visibility(
                         visible: !provider.updateProfileInProgress,
                         replacement: const Center(child: CircularProgressIndicator()),
-                        child: FilledButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              provider.updateProfile().then((isSuccess) {
-                                if (mounted) {
-                                  if (isSuccess) {
-                                    showSnackBarMessage(context, 'Profile updated successfully');
-                                  } else {
-                                    showSnackBarMessage(context, provider.errorMessage ?? 'Update failed');
+                        child: SizedBox(
+                          // ignore: avoid_unnecessary_containers
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                provider.updateProfile().then((isSuccess) {
+                                  if (mounted) {
+                                    if (isSuccess) {
+                                      showSnackBarMessage(context, 'Profile updated successfully');
+                                    } else {
+                                      showSnackBarMessage(context, provider.errorMessage ?? 'Update failed');
+                                    }
                                   }
-                                }
-                              });
-                            }
-                          },
-                          child: const Icon(Icons.arrow_circle_right_outlined),
+                                });
+                              }
+                            },
+                            child: const Text('Update'),
+                          ),
                         ),
                       ),
                     ],
